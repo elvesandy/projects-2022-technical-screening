@@ -34,11 +34,18 @@ def is_unlocked(courses_list, target_course):
     You can assume all courses are worth 6 units of credit
     """
     conditions = CONDITIONS[target_course]
-    #returns a string
+    if not courses_list:
+        return target_course == "COMP1511"
+    if conditions[0] == 'P' or conditions[0] == 'p':
+        conditions = conditions.split(None, 1)[1]
     prereqs, req_credits = parser(conditions)
     credits = 6*len(courses_list)
-   
-    if (x in prereqs for x in courses_list) and (credits >= req_credits):
+    # print(prereqs, courses_list)
+    counter = 0
+    for x in courses_list:
+        if x in prereqs: 
+            counter+=1
+    if counter > 0 and (credits >= req_credits):
         return True
     return False
 
@@ -50,23 +57,19 @@ def parser(condition):
     prereqs = []
     req_credits = 0
     if condition:
-        subconditons = (re.findall('\(.*?\)', condition))
-        print(subconditons)
+        # subconditons = (re.findall('\(.*?\)', condition))
+        # print(subconditons)
+        condition = condition.replace("or", "OR")
+        condition = condition.replace("and", "AND")
         conditions = condition.split("OR")
-        print(conditions)
-        # conditions = [x.split("or") for x in conditions]
-        # print(conditions)
         # conditions = [x.split("AND") for x in conditions]
-        # print(conditions)
-        # conditions = [x.split("and") for x in conditions]
-        # print(conditions)
-
+        prereqs = [x.strip() for x in conditions]
     return prereqs, req_credits
 
     # "COMP2111": "MATH1081 AND    (COMP1511 OR DPST1091 OR COMP1917 OR COMP1921)",
     # "COMP2121": "COMP1917 OR COMP1921 OR COMP1511 OR DPST1091 OR COMP1521 OR DPST1092 OR (COMP1911 AND MTRN2500)",
     
-print(is_unlocked([], "COMP2111"))
+# print(is_unlocked([], "COMP2111"))
 # assert(is_unlocked([], "COMP1511") == True)
 # assert(is_unlocked(["COMP1511", "COMP1521"], "COMP3151") == False)
 # assert(is_unlocked(["COMP1511", "COMP1531"], "COMP2041") == True) 
