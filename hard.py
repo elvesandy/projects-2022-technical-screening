@@ -16,7 +16,7 @@ For complete transparency, this is worth more than the easy challenge.
 A good solution is favourable but does not guarantee a spot in Projects because
 we will also consider many other criteria.
 """
-import json
+import json, re
 
 # NOTE: DO NOT EDIT conditions.json
 with open("./conditions.json") as f:
@@ -24,6 +24,7 @@ with open("./conditions.json") as f:
     f.close()
 
 def is_unlocked(courses_list, target_course):
+    # print(CONDITIONS)
     """Given a list of course codes a student has taken, return true if the target_course 
     can be unlocked by them.
     
@@ -32,13 +33,44 @@ def is_unlocked(courses_list, target_course):
 
     You can assume all courses are worth 6 units of credit
     """
+    conditions = CONDITIONS[target_course]
+    #returns a string
+    prereqs, req_credits = parser(conditions)
+    credits = 6*len(courses_list)
+   
+    if (x in prereqs for x in courses_list) and (credits >= req_credits):
+        return True
+    return False
+
+def parser(condition):
+    '''
+    input: str
+    output: list of strings, int
+    '''
+    prereqs = []
+    req_credits = 0
+    if condition:
+        subconditons = (re.findall('\(.*?\)', condition))
+        print(subconditons)
+        conditions = condition.split("OR")
+        print(conditions)
+        # conditions = [x.split("or") for x in conditions]
+        # print(conditions)
+        # conditions = [x.split("AND") for x in conditions]
+        # print(conditions)
+        # conditions = [x.split("and") for x in conditions]
+        # print(conditions)
+
+    return prereqs, req_credits
+
+    # "COMP2111": "MATH1081 AND    (COMP1511 OR DPST1091 OR COMP1917 OR COMP1921)",
+    # "COMP2121": "COMP1917 OR COMP1921 OR COMP1511 OR DPST1091 OR COMP1521 OR DPST1092 OR (COMP1911 AND MTRN2500)",
     
-    # TODO: COMPLETE THIS FUNCTION!!!
-    
-    return True
-
-
-
-
+print(is_unlocked([], "COMP2111"))
+# assert(is_unlocked([], "COMP1511") == True)
+# assert(is_unlocked(["COMP1511", "COMP1521"], "COMP3151") == False)
+# assert(is_unlocked(["COMP1511", "COMP1531"], "COMP2041") == True) 
+# assert(is_unlocked([ "COMP1511"], "COMP3161") == False)
+# assert(is_unlocked([ "COMP3901"], "COMP3902") == False)
 
     
